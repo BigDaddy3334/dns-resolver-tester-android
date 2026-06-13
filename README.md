@@ -92,8 +92,6 @@ app/build/outputs/apk/debug/app-universal-debug.apk
 python3 scripts/fetch_stormdns_binaries.py
 ```
 
-Не коммитьте реальные production keys в исходный код.
-
 ## Примечания
 
 Это тестовый инструмент, а не полноценный VPN UI. Он специально проверяет
