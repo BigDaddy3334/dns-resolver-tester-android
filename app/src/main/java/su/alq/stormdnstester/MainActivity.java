@@ -61,7 +61,7 @@ import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private static final String PREFS = "tester";
-    private static final String DEFAULT_DOMAIN = "v.alq.su";
+    private static final String DEFAULT_DOMAIN = "";
     private static final String DEFAULT_TEST_URL = "https://www.gstatic.com/generate_204";
     private static final String DEFAULT_DOWNLOAD_URL = "https://speed.cloudflare.com/__down?bytes=200000";
     private static final String SPEEDTEST_URL = "https://www.speedtest.net/";
@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
         domainInput = addInput(root, "DNS domain", DEFAULT_DOMAIN, false);
         keyInput = addInput(root, "Encryption key", "", false);
         keyInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        encryptionMethodInput = addInput(root, "Encryption method: 0-5", "1", true);
+        encryptionMethodInput = addInput(root, "Encryption method: 0-5", "", true);
 
         addSectionTitle(root, "Test settings");
         minSpeedInput = addInput(root, "Minimum speed, KB/s", "20", true);
@@ -380,7 +380,7 @@ public class MainActivity extends Activity {
         subscriptionInput.setText(prefs.getString("subscription", ""));
         domainInput.setText(prefs.getString("domain", DEFAULT_DOMAIN));
         keyInput.setText(prefs.getString("key", ""));
-        encryptionMethodInput.setText(prefs.getString("encryptionMethod", "1"));
+        encryptionMethodInput.setText(prefs.getString("encryptionMethod", ""));
         resolversInput.setText(prefs.getString("resolvers", "1.1.1.1, 8.8.8.8, 9.9.9.9"));
         minSpeedInput.setText(prefs.getString("minSpeed", "20"));
         retriesInput.setText(prefs.getString("retries", "2"));
@@ -461,7 +461,7 @@ public class MainActivity extends Activity {
     private void startTests() {
         String domain = domainInput.getText().toString().trim();
         String key = keyInput.getText().toString().trim();
-        int encryptionMethod = clampInt((int) parseDouble(encryptionMethodInput.getText().toString(), 1.0), 0, 5);
+        int encryptionMethod = parseEncryptionMethod(encryptionMethodInput.getText().toString());
         String downloadUrl = downloadUrlInput.getText().toString().trim();
         double minKbps = parseDouble(minSpeedInput.getText().toString(), 20.0);
         int retries = Math.max(1, (int) parseDouble(retriesInput.getText().toString(), 2.0));
@@ -496,6 +496,10 @@ public class MainActivity extends Activity {
 
         if (domain.isEmpty() || key.isEmpty() || resolvers.isEmpty()) {
             toast("Subscription or domain/key plus resolver list are required");
+            return;
+        }
+        if (encryptionMethod < 0) {
+            toast("Encryption method is required");
             return;
         }
 
@@ -1084,6 +1088,19 @@ public class MainActivity extends Activity {
 
     private static int clampInt(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    private static int parseEncryptionMethod(String text) {
+        String value = text == null ? "" : text.trim();
+        if (value.isEmpty()) {
+            return -1;
+        }
+        try {
+            int method = Integer.parseInt(value);
+            return method >= 0 && method <= 5 ? method : -1;
+        } catch (NumberFormatException ignored) {
+            return -1;
+        }
     }
 
     private void setRunning(boolean running) {

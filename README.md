@@ -92,16 +92,6 @@ app/build/outputs/apk/debug/app-universal-debug.apk
 python3 scripts/fetch_stormdns_binaries.py
 ```
 
-## Текущие Значения Сервера
-
-Используйте эти значения в приложении:
-
-```text
-Domain: v.alq.su
-Encryption method: 1
-Encryption key: вставьте ключ сервера
-```
-
 Не коммитьте реальные production keys в исходный код.
 
 ## Примечания
